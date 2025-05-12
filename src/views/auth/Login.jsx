@@ -1,110 +1,170 @@
 import React, { useEffect, useState } from 'react';
-import {Link, useNavigate} from 'react-router-dom'
-import { FaGoogle } from "react-icons/fa";
-import { FaFacebook } from "react-icons/fa";
-import { PropagateLoader } from 'react-spinners';
-import toast from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
-import { overrideStyle } from '../../utils/utils';
-import { seller_login,messageClear } from '../../store/Reducers/authReducer';
+import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate
+import { AiOutlineGoogle, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Google and Eye icons
+import { FaFacebookF } from "react-icons/fa";   // Facebook icon
+import { PropagateLoader } from 'react-spinners'; // Loader component
+import toast from 'react-hot-toast'; // Toast notifications
+import { useDispatch, useSelector } from 'react-redux'; // Redux hooks
+import { overrideStyle } from '../../utils/utils'; // Style override for loader (ensure path is correct)
+import { seller_login, messageClear } from '../../store/Reducers/authReducer'; // Redux actions
 
 const Login = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const navigate = useNavigate()
+    // Get state from Redux store
+    const { loader, errorMessage, successMessage } = useSelector(state => state.auth);
 
-    const dispatch = useDispatch()
-    const {loader,errorMessage,successMessage} = useSelector(state=>state.auth)
-
-    const [state, setState] = useState({ 
+    // Component state for form inputs
+    const [state, setState] = useState({
         email: "",
         password: ""
-    })
+    });
+    // State for password visibility toggle
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
+    // Handles changes in input fields
     const inputHandle = (e) => {
         setState({
             ...state,
-            [e.target.name] : e.target.value
-        })
-    }
+            [e.target.name]: e.target.value
+        });
+    };
 
+    // Handles form submission
     const submit = (e) => {
-        e.preventDefault()
-        dispatch(seller_login(state))
-    }
+        e.preventDefault();
+        // Basic frontend validation (optional but recommended)
+        if (!state.email || !state.password) {
+            toast.error("Please enter both email and password.");
+            return;
+        }
+        dispatch(seller_login(state)); // Dispatch login action
+    };
 
+    // Effect to handle success/error messages and navigation
     useEffect(() => {
-
         if (successMessage) {
-            toast.success(successMessage)
-            dispatch(messageClear()) 
-            navigate('/') 
+            toast.success(successMessage);
+            dispatch(messageClear()); // Clear the message from Redux state
+            navigate('/'); // Navigate to dashboard/home on successful login
         }
         if (errorMessage) {
-            toast.error(errorMessage)
-            dispatch(messageClear())
+            toast.error(errorMessage);
+            dispatch(messageClear()); // Clear the message from Redux state
         }
-        
-
-    },[successMessage,errorMessage])
-
+        // Add dispatch and navigate to dependency array as they are used inside useEffect
+    }, [successMessage, errorMessage, dispatch, navigate]);
 
     return (
-        <div className='min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center' >
-          <div className='w-[350px] text-[#ffffff] p-2'>
-            <div className='bg-[#6f68d1] p-4 rounded-md'>
-                <h2 className='text-xl mb-3 font-bold'>Welcome to Ecommerce</h2>
-                <p className='text-sm mb-3 font-medium'>Please Sing In your account</p>
+        // Main container with gradient background
+        <div className='min-w-screen min-h-screen bg-gradient-to-br from-[#0f4229] via-[#1b5e20] to-[#2e7d32] flex justify-center items-center py-8 px-4'>
+            {/* Card container with max width for responsiveness */}
+            <div className='w-full max-w-sm text-[#e3f2fd] p-4'> {/* Adjusted max-width */}
+                {/* Card styling */}
+                <div className='bg-[#1b5e20] p-6 rounded-lg shadow-xl border border-[#2e7d32]'>
+                    <h2 className='text-2xl font-semibold text-center mb-3 text-white'>
+                        Welcome To SOUG ELFALAH
+                    </h2>
+                    <p className='text-sm text-gray-300 text-center mb-6'> {/* Adjusted text color and margin */}
+                        Please login to continue.
+                    </p>
 
-    <form onSubmit={submit}>
-         
-        <div className='flex flex-col w-full gap-1 mb-3'>
-            <label htmlFor="email">Email</label>
-            <input onChange={inputHandle} value={state.email}  className='px-3 py-2 outline-none border border-slate-400 bg-transparent rounded-md' type="email" name='email' placeholder='Email' id='email' required />
+                    {/* Login Form */}
+                    <form onSubmit={submit} noValidate>
+                         {/* Disable inputs when loading */}
+                         <fieldset disabled={loader} className="space-y-5"> {/* Added spacing */}
+                            {/* Email Input */}
+                            <div>
+                                <label htmlFor="email" className="text-sm text-gray-300 block mb-1">Email</label>
+                                <input
+                                    id="email" name="email" type="email" required
+                                    placeholder='Enter your email'
+                                    value={state.email}
+                                    onChange={inputHandle}
+                                    // Consistent input styling
+                                    className='w-full px-3 py-2 bg-transparent border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all'
+                                />
+                            </div>
 
-        </div>
+                            {/* Password Input with Forgot Link and Visibility Toggle */}
+                            <div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label htmlFor="password" className="text-sm text-gray-300">Password</label>
+                                    <Link
+                                        to="/forgot-password" // Link to the forgot password page
+                                        className="text-xs text-yellow-400 hover:underline hover:text-yellow-300 transition-colors"
+                                    >
+                                        Forgot Password?
+                                    </Link>
+                                </div>
+                                <div className="relative">
+                                     <input
+                                        id="password" name="password" required
+                                        // Toggle type based on visibility state
+                                        type={passwordVisible ? "text" : "password"}
+                                        placeholder='Enter your password'
+                                        value={state.password}
+                                        onChange={inputHandle}
+                                        className='w-full px-3 py-2 pr-10 bg-transparent border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all'
+                                    />
+                                    {/* Visibility Toggle Button */}
+                                    <button
+                                        type="button" // Important: type="button" to prevent form submission
+                                        onClick={() => setPasswordVisible(!passwordVisible)}
+                                        className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white cursor-pointer"
+                                        aria-label={passwordVisible ? "Hide password" : "Show password"}
+                                    >
+                                        {passwordVisible ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                                    </button>
+                                </div>
+                            </div>
+                         </fieldset>
 
-        <div className='flex flex-col w-full gap-1 mb-3'>
-            <label htmlFor="password">Password</label>
-            <input onChange={inputHandle} value={state.password}  className='px-3 py-2 outline-none border border-slate-400 bg-transparent rounded-md' type="password" name='password' placeholder='Password' id='password' required />
-        </div>
-  
+                        {/* Login Button */}
+                        <button
+                            disabled={loader} // Disable button when loading
+                            type="submit"
+                            // Themed button styles
+                            className={`mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 rounded-md shadow-lg transition-all transform hover:scale-[1.02] flex justify-center items-center h-[44px] ${loader ? 'opacity-70 cursor-wait' : 'cursor-pointer'}`}
+                        >
+                            {/* Show loader or text */}
+                            {loader ? <PropagateLoader color='#333' cssOverride={overrideStyle} size={10} /> : 'Login'}
+                        </button>
 
-        <button disabled={loader ? true : false}  className='bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-            {
-               loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sing In'
-            } 
-            </button>
+                        {/* Link to Registration Page */}
+                        <div className='text-center mt-5'>
+                            <p className='text-sm text-gray-300'> {/* Adjusted text color */}
+                                Don't have an account? <Link to="/register" className="text-yellow-400 font-medium hover:underline">Sign up here</Link>
+                            </p>
+                        </div>
 
-        <div className='flex items-center mb-3 gap-3 justify-center'>
-            <p>Don't Have an account ? <Link className='font-bold' to="/register">Sing Up</Link> </p> 
-        </div>
+                        {/* "Or" Divider */}
+                        <div className='w-full flex justify-center items-center my-5'> {/* Adjusted margin */}
+                            <div className='w-[45%] bg-gray-600 h-[1px]'></div>
+                            <span className='px-2 text-sm text-gray-400'>Or</span> {/* Adjusted text color */}
+                            <div className='w-[45%] bg-gray-600 h-[1px]'></div>
+                        </div>
 
-        <div className='w-full flex justify-center items-center mb-3'>
-            <div className='w-[45%] bg-slate-700 h-[1px]'></div>
-            <div className='w-[10%] flex justify-center items-center'>
-                <span className='pb-1'>Or</span>
-            </div>
-            <div className='w-[45%] bg-slate-700 h-[1px] '></div>
-        </div>
+                        {/* Social Login Buttons */}
+                        <div className='flex flex-col sm:flex-row justify-center items-center gap-3'>
+                            {/* Google Button */}
+                            <button type="button" className='w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-800 font-medium rounded-md shadow-md hover:bg-gray-200 transition-all transform hover:scale-105'>
+                                <AiOutlineGoogle className="text-red-600 text-xl" />
+                                <span>Google</span> {/* Simplified text */}
+                            </button>
 
-        <div className='flex justify-center items-center gap-3'>
-            <div className='w-[135px] h-[35px] flex rounded-md bg-orange-700 shadow-lg hover:shadow-orange-700/50 justify-center cursor-pointer items-center overflow-hidden'>
-            <span><FaGoogle /></span>
-             </div>
+                            {/* Facebook Button */}
+                            <button type="button" className='w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-md shadow-md hover:bg-blue-700 transition-all transform hover:scale-105'>
+                                <FaFacebookF className="text-white text-xl" />
+                                <span>Facebook</span> {/* Simplified text */}
+                            </button>
+                        </div>
 
-             <div className='w-[135px] h-[35px] flex rounded-md bg-blue-700 shadow-lg hover:shadow-blue-700/50 justify-center cursor-pointer items-center overflow-hidden'>
-            <span><FaFacebook /></span>
-             </div>
-
-        </div>
-
-
-    </form>
- 
-            </div>
-            </div>  
-            
-        </div>
+                    </form> {/* End of Form */}
+                </div> {/* End of Card */}
+            </div> {/* End of Card Container */}
+        </div> // End of Main Container
     );
 };
 

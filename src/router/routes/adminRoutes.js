@@ -9,6 +9,12 @@ const SellerRequest = lazy(()=> import('../../views/admin/SellerRequest'))
 const SellerDetails = lazy(()=> import('../../views/admin/SellerDetails'))   
 const ChatSeller = lazy(()=> import('../../views/admin/ChatSeller'))   
 const OrderDetails = lazy(()=> import('../../views/admin/OrderDetails'))  
+const AddCategory = lazy(() => import('../../views/admin/AddServiceCategory'));
+const AdminAdBanners = lazy(() => import('../../views/admin/AdminAdBanners')); // Create this component
+const AddEditAdBanner = lazy(() => import('../../views/admin/AddEditAdBanner')); // Create this component
+
+
+
 
 export const adminRoutes = [
     {
@@ -25,6 +31,11 @@ export const adminRoutes = [
         path: 'admin/dashboard/category',
         element : <Category/> ,
         role : 'admin'
+    },
+    {
+        path: 'admin/dashboard/add-category',
+        element: <AddCategory />,
+        role: 'admin'
     },
     {
         path: 'admin/dashboard/sellers',
@@ -66,5 +77,23 @@ export const adminRoutes = [
         element : <OrderDetails/> ,
         role : 'admin'
     },
+     // +++ New Ad Banner Routes +++
+     {
+        path: 'admin/dashboard/ad-banners',
+        element: <AdminAdBanners />, // List view
+        role: 'admin'
+    },
+    {
+        path: 'admin/dashboard/ad-banners/add',
+        element: <AddEditAdBanner />, // Add form view
+        role: 'admin'
+    },
+    {
+        path: 'admin/dashboard/ad-banners/edit/:adBannerId',
+        element: <AddEditAdBanner />, // Edit form view (reuse component)
+        role: 'admin'
+    },
+    
+    
  
 ]

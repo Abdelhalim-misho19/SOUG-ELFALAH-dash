@@ -34,9 +34,9 @@ const ProtectRoute = ({route,children}) => {
                    
                 }
                 
-               }else{
+               }/*else{
                 return <Navigate to='/unauthorized' replace />
-               }
+               }*/
             } 
 
 
