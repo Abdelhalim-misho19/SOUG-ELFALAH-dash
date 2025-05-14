@@ -1,6 +1,6 @@
 import axios from "axios";
 const local = 'http://localhost:5000'
-const production = 'https://soug-elfalah-backend-5.onrender.com'
+const production = 'https://soug-elfalah-backend-6.onrender.com'
 
 let api_url =''
 let mode ='pro'
