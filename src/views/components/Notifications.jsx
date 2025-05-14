@@ -7,6 +7,7 @@ import {
     fetchUnreadCount,
     updateUnreadCount,
 } from '../../store/Reducers/notificationReducer';
+const SOCKET_SERVER_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000"; // Use the env variable
 
 const Notifications = () => {
     const dispatch = useDispatch();
@@ -21,7 +22,7 @@ const Notifications = () => {
         dispatch(fetchUnreadCount()).catch(err => console.error('[Notifications] Error fetching unread count:', err));
 
         // Set up Socket.IO connection
-        socketRef.current = io('http://localhost:5000', {
+        socketRef.current = io(SOCKET_SERVER_URL, {
             withCredentials: true,
             reconnection: true,
             reconnectionAttempts: 5,
